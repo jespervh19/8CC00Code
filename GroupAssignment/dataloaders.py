@@ -24,8 +24,8 @@ class DataLoader:
             # Append descriptor values to the DataFrame
             descriptors = pd.concat([descriptors, pd.DataFrame(descriptor_values, index=[i])], axis=0)
             
-        return descriptors
+        return descriptors.values
     
     def get_labels(self):
         labels = self.data[['ALDH1_inhibition']]
-        return labels
+        return labels.values
