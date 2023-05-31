@@ -7,7 +7,6 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # File paths
 csv_file = os.path.join(script_dir, 'tested_molecules-1.csv')
-output_file = os.path.join(script_dir, 'descriptors.csv')
 
 # Read the CSV file
 data = pd.read_csv(csv_file)
@@ -33,4 +32,3 @@ merged_data = pd.concat([data, descriptors], axis=1)
 
 # Print the merged data
 print(merged_data)
-
