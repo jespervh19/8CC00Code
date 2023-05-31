@@ -1,9 +1,16 @@
+import os
 import pandas as pd
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# File paths
+csv_file = os.path.join(script_dir, 'tested_molecules-1.csv')
+output_file = os.path.join(script_dir, 'descriptors.csv')
+
 # Read the CSV file
-data = pd.read_csv('C:/Users/20183449/Desktop/TU/Jaar 5/Q4/Advanced programming and biomedical data analysis/8CC00Code/GroupAssignment/tested_molecules-1.csv')
+data = pd.read_csv(csv_file)
 
 # Create an empty DataFrame for descriptors
 descriptors = pd.DataFrame()
@@ -25,4 +32,4 @@ for i, row in data.iterrows():
 merged_data = pd.concat([data, descriptors], axis=1)
 
 # Save the merged data to a new CSV file
-merged_data.to_csv('C:/Users/20183449/Desktop/TU/Jaar 5/Q4/Advanced programming and biomedical data analysis/8CC00Code/GroupAssignment/descriptors.csv', index=False)
+merged_data.to_csv('descriptors.csv', index=False)
