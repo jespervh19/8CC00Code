@@ -19,13 +19,14 @@ class DataLoader:
             # Calculate descriptors
             descriptor_values = {}
             for descriptor_name, descriptor_function in Descriptors.descList:
-                descriptor_values[descriptor_name] = descriptor_function(molecule)
+                if 'fr_' not in descriptor_name:
+                    descriptor_values[descriptor_name] = descriptor_function(molecule)
             
             # Append descriptor values to the DataFrame
             descriptors = pd.concat([descriptors, pd.DataFrame(descriptor_values, index=[i])], axis=0)
-            
+                        
         return descriptors.values
     
     def get_labels(self):
-        labels = self.data[['ALDH1_inhibition']]
-        return labels.values
+        labels = self.data
+        return labels
