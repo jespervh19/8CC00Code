@@ -26,6 +26,25 @@ class DataLoader:
             descriptors = pd.concat([descriptors, pd.DataFrame(descriptor_values, index=[i])], axis=0)
                         
         return descriptors.values
+
+    def get_molecular_descriptors_dataframe(self):
+        # Create an empty DataFrame for descriptors
+        descriptors = pd.DataFrame()
+
+        # Iterate over the SMILES column
+        for i, row in self.data.iterrows():
+            smiles = row['SMILES']
+            molecule = Chem.MolFromSmiles(smiles)
+
+            # Calculate descriptors
+            descriptor_values = {}
+            for descriptor_name, descriptor_function in Descriptors.descList:
+                descriptor_values[descriptor_name] = descriptor_function(molecule)
+
+            # Append descriptor values to the DataFrame
+            descriptors = pd.concat([descriptors, pd.DataFrame(descriptor_values, index=[i])], axis=0)
+
+        return descriptors
     
     def get_labels(self):
         labels = self.data
