@@ -3,30 +3,45 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import confusion_matrix, accuracy_score
+from sklearn.model_selection import cross_val_score
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def train(X_train, y_train, num_components):
-    y_train = y_train["ALDH1_inhibition"]
+def train(X, y, num_components, degrees=[1,2], use_pca=[True, False]):
+    y = y["ALDH1_inhibition"]
     # Create a PCA object
-    pca = PCA(n_components=num_components)
+    best_score = 0
+    best_model = None
+    for use_pca_value in use_pca:
+        for degree in degrees:
+            poly = PolynomialFeatures(degree=degree, include_bias=False)
 
-    # Create a classifier (e.g., Random Forest Classifier)
-    regressor = LogisticRegression(max_iter=2500)
+            pca = PCA(n_components=num_components)
 
-    # Create a pipeline with PCA and the classifier
-    pipeline = Pipeline([('pca', pca), ('regressor', regressor)])
+            # Create a classifier (e.g., Random Forest Classifier)
+            regressor = LogisticRegression(max_iter=2500)
 
-    # Fit the pipeline on the training data
-    pipeline.fit(X_train, y_train)
+            if use_pca_value:
+                # Create a pipeline with PCA and the classifier
+                pipeline = Pipeline([('poly', poly), ('pca', pca), ('regressor', regressor)])
+            else:
+                pipeline = Pipeline([('poly', poly), ('regressor', regressor)])
 
-    y_pred = pipeline.predict(X_train)
-    accuracy = np.round(accuracy_score(y_train, y_pred),3)
-    print(f"Train accuracy = {accuracy}")
+            scores = cross_val_score(pipeline, X, y, cv=5)
+            avg_score = np.mean(scores)
+            if avg_score > best_score:
+                best_score = avg_score
+                best_model = pipeline
 
-    return pipeline
+            print(f"Degree: {degree}, Use_PCA: {use_pca_value}")
+            print("Cross-validation scores:", scores)
+            print("Average score:", avg_score)
+    
+    best_model.fit(X,y)
+    return best_model
 
 def test(pipeline, X_test, y_test):
     y_test = y_test["ALDH1_inhibition"]

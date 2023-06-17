@@ -65,35 +65,34 @@ def plot_variance(descriptors, percentage=0.9):
 
     return num_components
 
-def plot_loadings(descriptors, num_components):
+def plot_loadings(descriptors, labels, num_components):
     pca = PCA(n_components=num_components)
     pca.fit(descriptors)
-    
+    scores = pca.transform(descriptors)
     # Get the loadings
     loadings = pca.components_
 
-    # Calculate the variance explained by each principal component
-    variance_explained = pca.explained_variance_ratio_
+    plot, axes = plt.subplots(1,2,figsize=(16, 6))
+    ax = axes.flatten()
 
-    # Create a variable names list
-    variable_names = descriptors.columns
+    classes = labels['ALDH1_inhibition'].unique()
+    colors = ['red', 'blue']
 
-    # Set the number of principal components to display on the loading plot
-    num_pc = len(loadings)
+    for cls, color in zip(classes, colors):
+        indices = labels['ALDH1_inhibition'] == cls
+        ax[0].scatter(scores[indices, 0], scores[indices, 1], c=color, alpha=0.5, label=cls)
 
-    # Set the number of variables to display on the loading plot
-    num_vars = len(variable_names)
+    ax[0].set_xlabel('PC1')
+    ax[0].set_ylabel('PC2')
+    ax[0].set_title('Score Plot - PC1 vs PC2')
+    ax[0].legend(title="ALDH1 inhibition")
 
-    # Plot the loading plot using a scatter plot
-    plt.figure(figsize=(7, 6))
-    for i in range(num_vars):
-        plt.scatter(loadings[0, i], loadings[1, i], color='b')
-        plt.text(loadings[0, i], loadings[1, i], variable_names[i])
-    plt.axhline(0, color='black', linewidth=0.5)
-    plt.axvline(0, color='black', linewidth=0.5)
-    plt.xlabel('PC1')
-    plt.ylabel('PC2')
-    plt.title('Loadings')
+    for i, column in enumerate(descriptors.columns):
+        ax[1].scatter(loadings[0, i], loadings[1, i], c='blue', alpha=0.5)
+        ax[1].annotate(column, (loadings[0, i]+0.01, loadings[1, i]-0.01))
+    ax[1].set_xlabel('PC1 loadings')
+    ax[1].set_ylabel('PC2 loadings')
+    ax[1].set_title('Loading Plot - PC1 vs PC2')
     plt.show()
 
 def feature_rankings(descriptors, num_components):
