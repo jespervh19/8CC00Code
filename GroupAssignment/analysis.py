@@ -72,7 +72,7 @@ def plot_loadings(descriptors, labels, num_components):
     # Get the loadings
     loadings = pca.components_
 
-    plot, axes = plt.subplots(1,2,figsize=(16, 6))
+    plot, axes = plt.subplots(1,2,figsize=(16, 6), subplot_kw={'projection': '3d'})
     ax = axes.flatten()
 
     classes = labels['ALDH1_inhibition'].unique()
@@ -80,19 +80,21 @@ def plot_loadings(descriptors, labels, num_components):
 
     for cls, color in zip(classes, colors):
         indices = labels['ALDH1_inhibition'] == cls
-        ax[0].scatter(scores[indices, 0], scores[indices, 1], c=color, alpha=0.5, label=cls)
+        ax[0].scatter(scores[indices, 0], scores[indices, 1], scores[indices, 2], c=color, alpha=0.5, label=cls)
 
     ax[0].set_xlabel('PC1')
     ax[0].set_ylabel('PC2')
-    ax[0].set_title('Score Plot - PC1 vs PC2')
+    ax[0].set_zlabel('PC3')
+    ax[0].set_title('Score Plot - PC1 vs PC2 vs PC3')
     ax[0].legend(title="ALDH1 inhibition")
 
     for i, column in enumerate(descriptors.columns):
-        ax[1].scatter(loadings[0, i], loadings[1, i], c='blue', alpha=0.5)
-        ax[1].annotate(column, (loadings[0, i]+0.01, loadings[1, i]-0.01))
+        ax[1].scatter(loadings[0, i], loadings[1, i], loadings[2, i], c='blue', alpha=0.5)
+        #ax[1].annotate(column, (loadings[0, i]+0.01, loadings[1, i]-0.01, loadings[2, i]+0.01))
     ax[1].set_xlabel('PC1 loadings')
     ax[1].set_ylabel('PC2 loadings')
-    ax[1].set_title('Loading Plot - PC1 vs PC2')
+    ax[1].set_zlabel('PC3 loadings')
+    ax[1].set_title('Loading Plot - PC1 vs PC2 vs PC3')
     plt.show()
 
 def feature_rankings(descriptors, num_components):

@@ -22,7 +22,7 @@ def train(X, y, num_components, degrees=[1,2], use_pca=[True, False]):
             pca = PCA(n_components=num_components)
 
             # Create a classifier (e.g., Random Forest Classifier)
-            regressor = LogisticRegression(max_iter=2500)
+            regressor = LogisticRegression(class_weight='balanced', max_iter=2500)
 
             if use_pca_value:
                 # Create a pipeline with PCA and the classifier
@@ -56,9 +56,9 @@ def test(pipeline, X_test, y_test):
     plt.xlabel('Predicted', fontsize=12)
     plt.ylabel('True', fontsize=12)
 
-def predict(pipeline, X_new, labels):
+def predict(pipeline, X_new, y_new):
     # Predict using the trained pipeline
     y_pred = pipeline.predict_proba(X_new)[:, 0]
-    combined_data = pd.concat([labels, pd.DataFrame(y_pred, columns=['ALDH1_inhibition'])], axis=1)
+    combined_data = pd.concat([y_new, pd.DataFrame(y_pred, columns=['ALDH1_inhibition'])], axis=1)
     combined_data = combined_data.sort_values(by="ALDH1_inhibition", ascending=False)
     return combined_data
